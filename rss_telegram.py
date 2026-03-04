@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 import os
-import time
 import json
 import logging
 import feedparser
-from datetime import datetime
-import requests
 import asyncio
 from telegram import Bot
 from telegram.constants import ParseMode
@@ -96,11 +93,10 @@ async def send_grouped_messages(bot, messages_by_feed):
         if not entries:
             continue
 
-        header = f"📢 *New content from {feed_title}*\n\n"
-        entries_text = ""
 
         for entry in entries:
-            entry_text = f"• *{entry['title']}*\n"
+            entry_text = ""
+            header = f"• *{entry['title']}*\n\n"
 
             if INCLUDE_DESCRIPTION and entry.get('description'):
                 desc = strip_html(entry['description'])
@@ -110,16 +106,11 @@ async def send_grouped_messages(bot, messages_by_feed):
 
             entry_text += f"\n  {entry['link']}\n\n"
 
-            if len(header) + len(entries_text) + len(entry_text) > MAX_MESSAGE_LENGTH:
-                await send_telegram_message(bot, TELEGRAM_CHAT_ID, header + entries_text)
-                entries_text = entry_text
-            else:
-                entries_text += entry_text
+            await send_telegram_message(bot, TELEGRAM_CHAT_ID, header + entry_text)
+            logger.info(f"Sent notification for: {entry['title']}")
+            await asyncio.sleep(30)
 
-        if entries_text:
-            await send_telegram_message(bot, TELEGRAM_CHAT_ID, header + entries_text)
-
-        await asyncio.sleep(1)
+        await asyncio.sleep(30)
 
     return True
 
@@ -179,10 +170,6 @@ async def main_async():
         return
 
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
-    await send_telegram_message(
-        bot, TELEGRAM_CHAT_ID,
-        "🤖 *RSS Monitoring Bot started!*\nActive feed monitoring. Configuration loaded from file."
-    )
 
     while True:
         sent_items = await check_feeds(bot)

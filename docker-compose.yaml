@@ -1,6 +1,6 @@
 services:
   rss-telegram:
-    image:  asterix94/rss-telegram:latest
+    image:  jochman/rss-telegram:latest
     container_name: rss-telegram
     restart: unless-stopped
     environment:

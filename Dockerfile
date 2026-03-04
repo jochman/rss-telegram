@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11.12-alpine3.22
 
 WORKDIR /app
 
@@ -8,8 +8,6 @@ COPY rss_telegram.py .
 
 RUN mkdir -p /app/data
 
-ENV TELEGRAM_BOT_TOKEN="your_bot_token_here"
-ENV TELEGRAM_CHAT_ID="your_chat_id_here"
 ENV INCLUDE_DESCRIPTION="true"
 ENV DISABLE_NOTIFICATION="false"
 ENV CHECK_INTERVAL=3600
