@@ -2,7 +2,7 @@ FROM python:3.11.12-alpine3.22
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir feedparser python-telegram-bot==20.7 requests
+RUN pip install --no-cache-dir feedparser python-telegram-bot==20.7
 
 COPY rss_telegram.py .
 

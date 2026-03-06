@@ -43,7 +43,7 @@ The bot:
 
 2. Install required dependencies:
    ```bash
-   pip install feedparser python-telegram-bot==20.7 requests
+   pip install feedparser python-telegram-bot==20.7
    ```
 
 3. Create a data directory and feeds file:
