@@ -10,7 +10,7 @@ def main():
         print(f"Link: {entry.link}")
         print(f"Description: {entry.description}")
         image = (
-            ET.fromstring(entry.get("summary", "")).find(".//img").get("src")
+            ET.fromstring(entry.get("summary", "")).find(".//img").get("src") # ty: ignore[unresolved-attribute]
             if entry.get("summary")
             else None
         )

@@ -8,3 +8,9 @@ dependencies = [
     "feedparser>=6.0.12",
     "python-telegram-bot==20.7",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.7",
+    "ty>=0.0.25",
+]

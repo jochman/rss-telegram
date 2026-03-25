@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from email.mime import image
 import os
 import json
 import logging
@@ -18,8 +17,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Get environment variables
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+TELEGRAM_BOT_TOKEN: str = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID: str = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+    logger.error(
+        "Missing environment variables. Make sure to set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID"
+    )
+    raise ValueError("Missing required environment variables")
 CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 3600))  # Default: 1 hour
 FEEDS_FILE = os.environ.get("FEEDS_FILE", "/app/data/feeds.txt")
 INCLUDE_DESCRIPTION = (
@@ -80,11 +85,11 @@ def save_sent_items(sent_items):
 
 
 async def send_telegram_message(
-    bot: Bot, chat_id: str, message: str, image: str = None
+    bot: Bot, chat_id: str, message: str, image: str | None = None
 ):
     """Send a Telegram message asynchronously."""
     try:
-        if image != None:
+        if image is not None:
             await bot.send_photo(
                 chat_id=chat_id,
                 photo=image,
@@ -126,11 +131,10 @@ async def send_grouped_messages(bot: Bot, messages_by_feed):
                 entry_text += f"  _{desc}_\n"
 
             entry_text += f"\n  {entry['link']}\n\n"
-            image = (
-                ET.fromstring(entry.get("summary", "")).find(".//img").get("src")
-                if entry.get("summary")
-                else None
-            )
+            image_tag = ET.fromstring(entry.get("summary")).find(".//img")
+            image = None
+            if image_tag is not None and image_tag.get("src") is not None:
+                image = image_tag.get("src")
             await send_telegram_message(
                 bot, TELEGRAM_CHAT_ID, header + entry_text, image
             )
